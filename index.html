@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <meta charset="UTF-8" />
+ <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+ <title>SportMap HK</title>
+ <link rel="preconnect" href="https://fonts.googleapis.com" />
+ <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+ <link
+   href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;600;700&display=swap"
+   rel="stylesheet"
+ />
+ <link rel="stylesheet" href="style.css">
+</head>
+<body>
+ <header>
+   <div class="brand">
+     <div class="brand-icon">HK</div>
+     <span>SportMap HK</span>
+   </div>
+   <div class="controls">
+     <button id="themeToggle" aria-label="Toggle light or dark mode">
+       🌤️ <span data-text="mode-label">Light Mode</span>
+     </button>
+     <button id="languageToggle" aria-label="Toggle English or Spanish">
+       🌐 <span data-text="language-label">English</span>
+     </button>
+   </div>
+ </header>
+
+
+ <main>
+   <section class="hero">
+     <img
+       src="Siu-Hei-Court2-Little-Steps-Asia.jpg"
+       alt="Players on a colorful outdoor basketball court"
+     />
+     <h1 data-text="headline">
+       Have you ever felt confused and overwhelmed finding where to play your specific sport around Hong Kong?
+     </h1>
+     <p data-text="intro">
+       Hong Kong is a large and diverse city with a wide variety of different sports scattered amongst the bustling city. This website was made to help find your sport near you!
+     </p>
+     <hr class="divider" />
+     <ol class="steps">
+       <li data-text="step1">
+         Enter the sport you are interested in locating around Hong Kong.
+       </li>
+       <li data-text="step2">
+         Tick the boxes to filter your preferences for the type of sport conditions.
+       </li>
+       <li data-text="step3">
+         If you want to revisit a certain location, favourite it so you can come back to it.
+       </li>
+     </ol>
+     <hr class="divider" />
+   </section>
+
+
+   <section class="input-group">
+     <label for="sportInput" data-text="sport-label">Enter a sport</label>
+     <input id="sportInput" type="text" placeholder="e.g., basketball" />
+   </section>
+
+
+   <button class="primary-btn" data-text="cta">Show Locations</button>
+
+
+   <div class="map-placeholder">
+     <span data-text="map-placeholder">Interactive map placeholder</span>
+   </div>
+ </main>
+
+
+ <script>
+   const translations = {
+     en: {
+       "mode-label": "Light Mode",
+       "language-label": "English",
+       headline:
+         "Have you ever felt confused and overwhelmed finding where to play your specific sport around Hong Kong?",
+       intro:
+         "Hong Kong is a large and diverse city with a wide variety of different sports scattered amongst the bustling city. This website was made to help find your sport near you!",
+       step1: "Enter the sport you are interested in locating around Hong Kong.",
+       step2: "Tick the boxes to filter your preferences for the type of sport conditions.",
+       step3: "If you want to revisit a certain location, favourite it so you can come back to it.",
+       "sport-label": "Enter a sport",
+       "filters-label": "Tick the Filters:",
+       "filter-outdoor": "Outdoor",
+       "filter-half": "Half-Court",
+       "filter-indoor": "Indoor",
+       "filter-public": "Public",
+       "filter-full": "Full-Court",
+       "filter-private": "Private",
+       cta: "Show Locations",
+       "map-placeholder": "Interactive map placeholder"
+     },
+     es: {
+       "mode-label": "Modo Claro",
+       "language-label": "Español",
+       headline:
+         "¿Te has sentido confundido y abrumado al intentar encontrar dónde practicar tu deporte en Hong Kong?",
+       intro:
+         "Hong Kong es una ciudad grande y diversa con una amplia variedad de deportes repartidos por la ciudad. ¡Este sitio web se creó para ayudarte a encontrar tu deporte cerca de ti!",
+       step1: "Ingresa el deporte que deseas localizar en Hong Kong.",
+       step2: "Marca las casillas para filtrar tus preferencias según las condiciones del deporte.",
+       step3: "Si quieres volver a visitar un lugar, añádelo a favoritos para regresar fácilmente.",
+       "sport-label": "Ingresa un deporte",
+       "filters-label": "Marca los filtros:",
+       "filter-outdoor": "Exterior",
+       "filter-half": "Media cancha",
+       "filter-indoor": "Interior",
+       "filter-public": "Público",
+       "filter-full": "Cancha completa",
+       "filter-private": "Privado",
+       cta: "Mostrar ubicaciones",
+       "map-placeholder": "Marcador de posición del mapa interactivo"
+     }
+   };
+
+
+   const textNodes = document.querySelectorAll("[data-text]");
+   const themeToggle = document.getElementById("themeToggle");
+   const languageToggle = document.getElementById("languageToggle");
+
+
+   let isDark = false;
+   let currentLang = "en";
+
+
+   const applyTranslations = (lang) => {
+     textNodes.forEach((node) => {
+       const key = node.dataset.text;
+       node.textContent = translations[lang][key];
+     });
+   };
+
+
+   const toggleTheme = () => {
+     isDark = !isDark;
+     document.body.classList.toggle("dark", isDark);
+     const modeLabelKey = "mode-label";
+     document.querySelector(`[data-text="${modeLabelKey}"]`).textContent =
+       translations[currentLang][modeLabelKey];
+     themeToggle.firstChild.textContent = isDark ? "🌙 " : "🌤️ ";
+   };
+
+
+   const toggleLanguage = () => {
+     currentLang = currentLang === "en" ? "es" : "en";
+     applyTranslations(currentLang);
+     languageToggle.firstChild.textContent = currentLang === "en" ? "🌐 " : "🌍 ";
+   };
+
+
+   themeToggle.addEventListener("click", toggleTheme);
+   languageToggle.addEventListener("click", toggleLanguage);
+
+
+   applyTranslations(currentLang);
+ </script>
+</body>
+</html>
