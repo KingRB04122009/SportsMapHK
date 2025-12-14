@@ -164,4 +164,39 @@ select:focus {
 .primary-btn {
   background: var(--accent);
   color: #fff;
-  border: n
+  border: none;
+  padding: 0.85rem 1rem;
+  border-radius: 12px;
+  font-weight: 600;
+  text-align: center;
+  margin-top: 1rem;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.2s ease;
+}
+
+.primary-btn:hover {
+  opacity: 0.95;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(49, 100, 255, 0.25);
+}
+
+.primary-btn:active {
+  transform: translateY(1px);
+  box-shadow: none;
+}
+
+.map-placeholder {
+  width: 100%;
+  min-height: 320px;
+  border-radius: 16px;
+  border: 2px dashed var(--border);
+  display: grid;
+  place-items: center;
+  font-weight: 600;
+  color: var(--muted);
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.dark .map-placeholder {
+  background: rgba(255, 255, 255, 0.03);
+}
