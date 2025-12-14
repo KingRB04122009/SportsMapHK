@@ -1,6 +1,7 @@
 const translations = {
 	en: {
-		"mode-label": "Light Mode",
+		"mode-label-light": "Light Mode",
+		"mode-label-dark": "Dark Mode",
 		"language-label": "English",
 		headline:
 			"Have you ever felt confused and overwhelmed finding where to play your specific sport around Hong Kong?",
@@ -21,7 +22,8 @@ const translations = {
 		"map-placeholder": "Interactive map placeholder"
 	},
 	es: {
-		"mode-label": "Modo Claro",
+		"mode-label-light": "Modo Claro",
+		"mode-label-dark": "Modo Oscuro",
 		"language-label": "Español",
 		headline:
 			"¿Te has sentido confundido y abrumado al intentar encontrar dónde practicar tu deporte en Hong Kong?",
@@ -46,23 +48,31 @@ const translations = {
 const textNodes = document.querySelectorAll("[data-text]");
 const themeToggle = document.getElementById("themeToggle");
 const languageToggle = document.getElementById("languageToggle");
+const modeLabelNode = document.querySelector('[data-text="mode-label"]');
 
 let isDark = false;
 let currentLang = "en";
 
+const updateModeLabelText = () => {
+	const modeKey = isDark ? "mode-label-dark" : "mode-label-light";
+	if (modeLabelNode) {
+		modeLabelNode.textContent = translations[currentLang][modeKey];
+	}
+};
+
 const applyTranslations = (lang) => {
 	textNodes.forEach((node) => {
 		const key = node.dataset.text;
+		if (key === "mode-label") return; // handled separately
 		node.textContent = translations[lang][key];
 	});
+	updateModeLabelText();
 };
 
 const toggleTheme = () => {
 	isDark = !isDark;
 	document.body.classList.toggle("dark", isDark);
-	const modeLabelKey = "mode-label";
-	document.querySelector(`[data-text="${modeLabelKey}"]`).textContent =
-		translations[currentLang][modeLabelKey];
+	updateModeLabelText();
 	themeToggle.firstChild.textContent = isDark ? "🌙 " : "🌤️ ";
 };
 
