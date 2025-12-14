@@ -102,3 +102,99 @@ themeToggle.addEventListener("click", toggleTheme);
 languageToggle.addEventListener("click", toggleLanguage);
 
 applyTranslations(currentLang);
+
+// Map integration
+let map;
+const mapDiv = document.getElementById('map');
+const placeholderDiv = document.querySelector('.map-placeholder');
+const sportSelect = document.getElementById('sportSelect');
+const showBtn = document.querySelector('.primary-btn');
+
+showBtn.addEventListener('click', async () => {
+  const sport = sportSelect.value;
+  if (!sport) return;
+
+  // Show map, hide placeholder
+  mapDiv.style.display = 'block';
+  placeholderDiv.style.display = 'none';
+
+  // Initialize map if not already
+  if (!map) {
+    map = L.map('map').setView([22.3193, 114.1694], 10); // Center on Hong Kong
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+  }
+
+  // Clear existing markers
+  map.eachLayer((layer) => {
+    if (layer instanceof L.Marker) {
+      map.removeLayer(layer);
+    }
+  });
+
+  // Define API endpoints for each sport (from HK LCSD open data via ArcGIS)
+  let url;
+  switch (sport) {
+    case 'basketball':
+      url = 'https://services3.arcgis.com/6j1KwZfY2fZrfNMR/arcgis/rest/services/Basketball_Courts_in_Hong_Kong/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=json';
+      break;
+    case 'football':
+      url = 'https://services3.arcgis.com/6j1KwZfY2fZrfNMR/arcgis/rest/services/Grass_Pitches_in_Hong_Kong/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=json';
+      break;
+    case 'tennis':
+      url = 'https://services3.arcgis.com/6j1KwZfY2fZrfNMR/arcgis/rest/services/Tennis_Court_in_Hong_Kong/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=json';
+      break;
+    case 'badminton':
+      url = 'https://services3.arcgis.com/6j1KwZfY2fZrfNMR/arcgis/rest/services/Badminton_Courts_in_Hong_Kong/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=json';
+      break;
+    case 'table-tennis':
+      url = 'https://services3.arcgis.com/6j1KwZfY2fZrfNMR/arcgis/rest/services/Table_Tennis_Tables_in_Hong_Kong/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=json';
+      break;
+    case 'baseball':
+      url = 'https://services3.arcgis.com/6j1KwZfY2fZrfNMR/arcgis/rest/services/Baseball_Pitches_Natural_Turf_Pitch_in_Hong_Kong/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=json';
+      break;
+    case 'swimming':
+      url = 'https://services3.arcgis.com/6j1KwZfY2fZrfNMR/arcgis/rest/services/Swimming_Pools_in_Hong_Kong/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=json';
+      break;
+    default:
+      return;
+  }
+
+  try {
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (data.features && data.features.length > 0) {
+      data.features.forEach((feature) => {
+        const geom = feature.geometry;
+        let latlng;
+        if (geom.rings) {
+          // Polygon: use centroid (approximate)
+          const ring = geom.rings[0];
+          const x = ring.reduce((sum, coord) => sum + coord[0], 0) / ring.length;
+          const y = ring.reduce((sum, coord) => sum + coord[1], 0) / ring.length;
+          latlng = [y, x];
+        } else if (geom.x && geom.y) {
+          // Point
+          latlng = [geom.y, geom.x];
+        }
+        if (latlng) {
+          const name = feature.attributes.NAME_EN || feature.attributes.name_en || 'Unknown Location';
+          const address = feature.attributes.ADDRESS_EN || feature.attributes.address_en || 'No address available';
+          L.marker(latlng).addTo(map)
+            .bindPopup(`<b>${name}</b><br>${address}`);
+        }
+      });
+      // Fit map to markers if any
+      if (map.getBounds().getNorthEast().lat !== map.getBounds().getSouthWest().lat) {
+        map.fitBounds(map.getBounds().pad(0.1));
+      }
+    } else {
+      console.warn('No features found for this sport.');
+    }
+  } catch (error) {
+    console.error('Error fetching locations:', error);
+    // Optionally show an error message in the UI
+  }
+});
